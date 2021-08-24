@@ -9,8 +9,7 @@ import {
   InputLabel, 
   InputAdornment, 
   IconButton,
-  Typography,
-  Link
+  Typography
 } from "@material-ui/core";
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
@@ -22,7 +21,7 @@ interface State {
   showPassword: boolean;
 }
 
-const Login: NextPage = () => {
+const Register: NextPage = () => {
   const [values, setValues] = React.useState<State>({
     showPassword: false
   })
@@ -34,7 +33,7 @@ const Login: NextPage = () => {
   return (
     <Grid container className="login-page">
       <Head>
-        <title>Login | Skill test Indolima | Riko Logwirno</title>
+        <title>Register | Skill test Indolima | Riko Logwirno</title>
         <meta name="description" content="Skill test Indolima | Riko Logwirno" />
       </Head>
       <Grid container justifyContent="center" alignItems="center">
@@ -53,8 +52,16 @@ const Login: NextPage = () => {
                 <Grid container item direction="column">
                   <FormControl margin="normal">
                     <Typography color="primary" variant="h4">
-                      LOGIN
+                      REGISTER
                     </Typography>
+                  </FormControl>
+                  <FormControl margin="normal">
+                    <InputLabel htmlFor="fullname-input">Full Name</InputLabel>
+                    <Input id="fullname-input" />
+                  </FormControl>
+                  <FormControl margin="normal">
+                    <InputLabel htmlFor="address-input">Address</InputLabel>
+                    <Input id="address-input" multiline={true} rows={2} />
                   </FormControl>
                   <FormControl margin="normal">
                     <InputLabel htmlFor="email-input">Email</InputLabel>
@@ -80,13 +87,8 @@ const Login: NextPage = () => {
                   </FormControl>
                 </Grid>
                 <Grid container item direction="row" justifyContent="space-between">
-                  <Link href={`/register`}>
-                    <Button color="secondary" variant="contained">
-                      Register
-                    </Button>
-                  </Link>
                   <Button color="primary" variant="contained">
-                    Login
+                    Register
                   </Button>
                 </Grid>
               </Grid>
@@ -98,4 +100,4 @@ const Login: NextPage = () => {
   )
 }
 
-export default Login
+export default Register
