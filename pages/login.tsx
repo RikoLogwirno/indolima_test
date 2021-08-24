@@ -49,7 +49,8 @@ const Login: NextPage = () => {
   const handleSubmit = async () => {
     setValues({ ...values, loading: true });
     try {
-      await User.check(values.datas);
+      let user = await User.check(values.datas);
+      localStorage.setItem("auth", JSON.stringify(user));
       setValues({ ...values, loginSuccess: true });
       setTimeout(() => Router.push('/'), 1500)
     } catch (error) {

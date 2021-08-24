@@ -111,6 +111,7 @@ async function remove(): Promise<RemoveTypes | null> {
 }
 
 const User = {
+  base_url,
   get,
   check,
   detail,
