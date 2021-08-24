@@ -16,19 +16,65 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import User from "../libs/user";
+import { ReactElement } from "react";
+import Alert from "../components/Alert";
+import Router from "next/router";
 
 interface State {
   showPassword: boolean;
+  loading: boolean;
+  registerSuccess: boolean;
+  datas: {
+    name: string;
+    address: string;
+    email: string;
+    password: string;
+  }
 }
 
 const Register: NextPage = () => {
   const [values, setValues] = React.useState<State>({
-    showPassword: false
-  })
+    showPassword: false,
+    loading: false,
+    registerSuccess: false,
+    datas: {
+      name: "",
+      address: "",
+      email: "",
+      password: "",
+    }
+  });
+
+  const inputRefs: Array<{value: string}> = [];
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
   };
+  
+  const handleSubmit = async () => {
+    setValues({ ...values, loading: true });
+    try {
+      await User.add(values.datas);
+      let datas = {
+        name: "",
+        address: "",
+        email: "",
+        password: "",
+      }
+      inputRefs.map(v => {
+        if (v !== null) {
+          v.value = "";
+        }
+      });
+      setValues({ ...values, registerSuccess: true, datas });
+      setTimeout(() => Router.push('/login'), 1500)
+    } catch (error) {
+      console.error(error);
+      alert(error);
+    }
+    setValues({ ...values, loading: false });
+  }
 
   return (
     <Grid container className="login-page">
@@ -57,21 +103,37 @@ const Register: NextPage = () => {
                   </FormControl>
                   <FormControl margin="normal">
                     <InputLabel htmlFor="fullname-input">Full Name</InputLabel>
-                    <Input id="fullname-input" />
+                    <Input 
+                      id="fullname-input"
+                      inputRef={(r) => inputRefs.push(r)}
+                      onChange={(ev) => setValues({ ...values, datas: { ...values.datas, name: ev.target.value } })}
+                    />
                   </FormControl>
                   <FormControl margin="normal">
                     <InputLabel htmlFor="address-input">Address</InputLabel>
-                    <Input id="address-input" multiline={true} rows={2} />
+                    <Input 
+                      id="address-input" 
+                      inputRef={(r) => inputRefs.push(r)}
+                      multiline={true} 
+                      rows={2} 
+                      onChange={(ev) => setValues({ ...values, datas: { ...values.datas, address: ev.target.value } })}
+                    />
                   </FormControl>
                   <FormControl margin="normal">
                     <InputLabel htmlFor="email-input">Email</InputLabel>
-                    <Input id="email-input" />
+                    <Input 
+                      id="email-input" 
+                      inputRef={(r) => inputRefs.push(r)}
+                      onChange={(ev) => setValues({ ...values, datas: { ...values.datas, email: ev.target.value } })}
+                    />
                   </FormControl>
                   <FormControl margin="normal">
                     <InputLabel htmlFor="password-input">Password</InputLabel>
                     <Input
                       id="password-input"
+                      inputRef={(r) => inputRefs.push(r)}
                       type={values.showPassword ? 'text' : 'password'}
+                      onChange={(ev) => setValues({ ...values, datas: { ...values.datas, password: ev.target.value }})}
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton
@@ -87,9 +149,17 @@ const Register: NextPage = () => {
                   </FormControl>
                 </Grid>
                 <Grid container item direction="row" justifyContent="space-between">
-                  <Button color="primary" variant="contained">
-                    Register
+                  <Button 
+                    color="primary" 
+                    variant="contained" 
+                    disabled={values.loading}
+                    onClick={handleSubmit}
+                  >
+                    {values.loading ? "LOADING" : "REGISTER"}
                   </Button>
+                </Grid>
+                <Grid container item direction="row" justifyContent="space-between">
+                  <Alert severity="success" show={values.registerSuccess}>Registrasi Sukses</Alert>
                 </Grid>
               </Grid>
             </Grid>

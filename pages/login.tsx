@@ -17,19 +17,47 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import Router from "next/router";
+import User from "../libs/user";
+import Alert from "../components/Alert";
 
 interface State {
   showPassword: boolean;
+  loading: boolean;
+  loginSuccess: boolean;
+  datas: {
+    email: string;
+    password: string;
+  }
 }
 
 const Login: NextPage = () => {
   const [values, setValues] = React.useState<State>({
-    showPassword: false
-  })
+    showPassword: false,
+    loading: false,
+    loginSuccess: false,
+    datas: {
+      email: "",
+      password: "",
+    }
+  });
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
   };
+
+  const handleSubmit = async () => {
+    setValues({ ...values, loading: true });
+    try {
+      await User.check(values.datas);
+      setValues({ ...values, loginSuccess: true });
+      setTimeout(() => Router.push('/'), 1500)
+    } catch (error) {
+      console.error(error);
+      alert(error);
+    }
+    setValues({ ...values, loading: false });
+  }
 
   return (
     <Grid container className="login-page">
@@ -58,13 +86,17 @@ const Login: NextPage = () => {
                   </FormControl>
                   <FormControl margin="normal">
                     <InputLabel htmlFor="email-input">Email</InputLabel>
-                    <Input id="email-input" />
+                    <Input
+                      id="email-input"
+                      onChange={(ev) => setValues({ ...values, datas: { ...values.datas, email: ev.target.value } })}
+                    />
                   </FormControl>
                   <FormControl margin="normal">
                     <InputLabel htmlFor="password-input">Password</InputLabel>
                     <Input
                       id="password-input"
                       type={values.showPassword ? 'text' : 'password'}
+                      onChange={(ev) => setValues({ ...values, datas: { ...values.datas, password: ev.target.value }})}
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton
@@ -85,9 +117,17 @@ const Login: NextPage = () => {
                       Register
                     </Button>
                   </Link>
-                  <Button color="primary" variant="contained">
-                    Login
+                  <Button 
+                    color="primary" 
+                    variant="contained" 
+                    disabled={values.loading} 
+                    onClick={handleSubmit}
+                  >
+                    {values.loading ? "LOADING" : "LOGIN"}
                   </Button>
+                </Grid>
+                <Grid container item direction="row" justifyContent="space-between">
+                  <Alert severity="success" show={values.loginSuccess}>Login Sukses</Alert>
                 </Grid>
               </Grid>
             </Grid>
